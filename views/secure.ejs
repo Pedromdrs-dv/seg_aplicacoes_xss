@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Módulo Seguro</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Módulo Seguro contra XSS</h1>
+  <% if (typeof error !== 'undefined') { %>
+  <p style="color: red;"><%= error %></p>
+<% } %>
+
+
+  <form action="/secure/register" method="POST">
+    <label for="name">Nome:</label>
+    <input type="text" name="name" id="name" required>
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <h2>Usuários Cadastrados</h2>
+  <ul>
+    <% users.forEach(user => { %>
+      <li><%= user.name %></li> <!-- Seguro: já sanitizado na rota -->
+    <% }) %>
+  </ul>
+
+  <p><a href="/dashboard">Voltar ao Dashboard</a></p>
+</body>
+</html>
