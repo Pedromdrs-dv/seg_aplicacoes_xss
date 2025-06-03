@@ -4,23 +4,103 @@
   <meta charset="UTF-8">
   <title>Módulo Vulnerável</title>
   <link rel="stylesheet" href="/style.css">
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .warning {
+      background-color: #ffecb3;
+      border-left: 4px solid #ffc107;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .message-form {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .message-list {
+      margin-top: 30px;
+    }
+    .message {
+      background-color: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      color: #888;
+      font-size: 0.9em;
+      margin-bottom: 5px;
+    }
+    .message-content {
+      padding: 10px 0;
+      border-top: 1px solid #eee;
+    }
+    .error {
+      color: red;
+      margin-bottom: 15px;
+    }
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Módulo Vulnerável a XSS</h1>
+  <div class="container">
+    <h1>Módulo Vulnerável a XSS</h1>
+    
+    <div class="warning">
+      <strong>Atenção:</strong> Este módulo é intencionalmente vulnerável a ataques XSS (Cross-Site Scripting).
+      As mensagens são exibidas sem sanitização para demonstrar como os ataques XSS podem ser executados.
+    </div>
 
-  <form action="/vulnerable/register" method="POST">
-    <label for="name">Nome:</label>
-    <input type="text" name="name" id="name" required>
-    <button type="submit">Cadastrar</button>
-  </form>
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
 
-  <h2>Usuários Cadastrados</h2>
-  <ul>
-    <% users.forEach(user => { %>
-     <li><%= user.name %></li> <!-- Sem escape: vulnerável a XSS -->
-    <% }) %>
-  </ul>
+    <div class="message-form">
+      <h2>Enviar Mensagem</h2>
+      <form action="/vulnerable/register" method="POST">
+        <div>
+          <label for="message">Conteúdo:</label>
+          <textarea name="message" id="message" rows="4" required></textarea>
+        </div>
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
 
-  <p><a href="/dashboard">Voltar ao Dashboard</a></p>
+    <div class="message-list">
+      <h2>Mensagens (Sem Proteção contra XSS)</h2>
+      
+      <% if (messages && messages.length > 0) { %>
+        <% messages.forEach(message => { %>
+          <div class="message">
+            <div class="message-header">
+              <span>Por: <%= message.username %></span>
+              <span><%= new Date(message.created_at).toLocaleString() %></span>
+            </div>
+            <div class="message-content">
+              <%- message.content %> <!-- Sem escape: vulnerável a XSS -->
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p>Nenhuma mensagem ainda.</p>
+      <% } %>
+    </div>
+
+    <p><a href="/dashboard">Voltar ao Dashboard</a></p>
+  </div>
 </body>
 </html>
